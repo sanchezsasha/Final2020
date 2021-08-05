@@ -1,11 +1,11 @@
 ---
-title: "Covid91 vaccine study Final2021"
+title: "COVID-19 vaccine study Final2021"
 author: "Sasha Sanchez"
 date: "Summer 2021"
 output: 
     html_document:
-    toc: true
-    toc_depth: 5
+          toc: true
+          toc_depth: 5
 ---
 
 ```{r include=FALSE,echo=FALSE}
@@ -15,12 +15,14 @@ require(forcats)
 OldData <-read.csv(file="covid91.csv",header=TRUE)
 #recode to remove the annoying "X" from the dataframe
 FinalData <- OldData %>% mutate(infected = recode(infected, aids = "covid", none = "OK" )) %>% select(-one_of("X"))
-FinalData$treatment <- as.factor(FinalData$treatment)
-FinalData$sex <- as.factor(FinalData$sex)
-FinalData$infected <- as.factor(FinalData$infected)
-FinalData$LGBTQ <- as.factor(FinalData$LGBTQ)
-FinalData$DrugUser <- as.factor(FinalData$DrugUser)
+FinalData <- FinalData %>%
+mutate(across(where(is.character), as.factor) )
+guy = filter(FinalData, sex =="guy")
+gal = filter(FinalData, sex =="gal")
+gay = filter(FinalData, LGBTQ == "gay")
+Druguser = filter(FinalData, DrugUser == "yes")
 ```
+
 
 # Introduction
 
@@ -29,15 +31,150 @@ A new  preventative vaccine (COVID-19) is under test in clinical trials. Given t
 
 # Guys
 
+### Barplot
 
+```{r}
+dd2 <- guy %>% group_by(infected,treatment) %>% summarize(count=n()) %>% mutate(prcnt=count/sum(count))
+
+
+# the group_by followed by summarize(count=n())
+
+basicC <- ggplot(dd2,aes(x=infected,y=count,fill=treatment))
+basicC + geom_bar(stat="identity",position="dodge")
+
+#Now for percentage plot
+
+basicCC <- ggplot(dd2,aes(x=infected,y=prcnt*100,fill=treatment)) 
+basicCC + geom_bar(stat="identity", position = "dodge")
+```
+
+This Bar plot represents the population of Guys meaning (Males) people and the relationship it has contraction of COVID-19 by taking the vaccine or the placebo.
+
+The Bar plot above also shows that about 58% did shockingly get COVID-19 even though they got the vaccine. And about 42% of the placebo did in fact contracted COVID-19. There has been a high increase percentage on those who took the vaccine and contracted COVID-19 versus those who only took the placebo. It appears that the COVID-19 vaccine is effective by it's protection. The men that took the drug were one in half more than likely to get COVID-19 than those who took the placebo.
+
+### Numerical Results
+
+
+```{r}
+table1 <- xtabs(~infected + treatment, data=guy)
+rowPerc(table1)
+colPerc(table1)
+```
+
+### Inferential Results
 
 # Gals
 
+### Barplot
 
 
-# Sexual Orientaion (LGBTQ)
+```{r}
+dd2 <- gal %>% group_by(infected,treatment) %>% summarize(count=n()) %>% mutate(prcnt=count/sum(count))
 
+
+# the group_by followed by summarize(count=n())
+
+basicC <- ggplot(dd2,aes(x=infected,y=count,fill=treatment))
+basicC + geom_bar(stat="identity",position="dodge")
+
+#Now for percentage plot
+
+basicCC <- ggplot(dd2,aes(x=infected,y=prcnt*100,fill=treatment)) 
+basicCC + geom_bar(stat="identity", position = "dodge")
+```
+
+
+In this bar plot shows the population of Gals meaning (Females) and the relationship of those who got the vaccine and those who got the placebo. 
+
+In this plot it shows that those who were given the placebo were more contracted to COVID-19. Only about 33% who where given the vaccine resulted in contracting COVID-19. This just means that about 65% of those that got COVID-19 were the only ones who recieved the placebo. 
+
+  
+### Numerical Results  
+  
+  
+```{r}
+table1 <- xtabs(~infected + treatment, data=gal)
+rowPerc(table1)
+colPerc(table1)
+```
+
+### Inferntial Results
+
+
+# Gay Sexual Orientaion (LGBTQ)
+
+### Barplot 
+
+```{r}
+dd2 <- gay %>% group_by(infected,treatment) %>% summarize(count=n()) %>% mutate(prcnt=count/sum(count))
+
+
+# the group_by followed by summarize(count=n())
+
+basicC <- ggplot(dd2,aes(x=infected,y=count,fill=treatment))
+basicC + geom_bar(stat="identity",position="dodge")
+
+#Now for percentage plot
+
+basicCC <- ggplot(dd2,aes(x=infected,y=prcnt*100,fill=treatment)) 
+basicCC + geom_bar(stat="identity", position = "dodge")
+```
+
+
+This bar plot represents the population of Gay people meaning (LGBTQ) Community and the relationship of the contraction of COVID-19 by taking the vaccine or the placebo.
+
+The bar plot above shows that about 71% of individuals who got the vaccine got COVID-19 followed by the 29% of the individuals who received the placebo. The individuals who received the vaccine were about three times more likely to get COVID-19 than those who took the placebo.
+
+### Numerical Results
+
+```{r}
+table1 <- xtabs(~infected + treatment, data=gay)
+rowPerc(table1)
+colPerc(table1)
+```
+
+### Inferential Results
 
 
 # Drug Users 
 
+### Barplot 
+
+
+
+```{r}
+dd2 <- Druguser %>% group_by(infected,treatment) %>% summarize(count=n()) %>% mutate(prcnt=count/sum(count))
+
+
+# the group_by followed by summarize(count=n())
+
+basicC <- ggplot(dd2,aes(x=infected,y=count,fill=treatment))
+basicC + geom_bar(stat="identity",position="dodge")
+
+#Now for percentage plot
+
+basicCC <- ggplot(dd2,aes(x=infected,y=prcnt*100,fill=treatment)) 
+basicCC + geom_bar(stat="identity", position = "dodge")
+```
+
+
+In this Bar plot represents the population of Drug users who answered yes and the relationship to the contraction of COVID-19 while taking the vaccine or the placebo. 
+
+The bar plot shows that about 34% who answered yes to the drug use and received the vaccine contracted COVID-19. This means that about 66% of the drug users that only took the placebo resulted in them getting COVID-19.  
+
+### Numerical Results
+
+
+```{r}
+table1 <- xtabs(~infected + treatment, data=Druguser)
+rowPerc(table1)
+colPerc(table1)
+```
+
+
+### Inferntial Results
+
+
+# Conclusion And Recommendations 
+
+Generally speaking about the COVID-19 vaccine, It appeared that in some cases the vaccine had an affect and so did the placebo among different Subjects. The vaccine was not effective to the Males However, Females were protected by COVID-19. The Covid vaccine was not effective for those who were in the LGBTQ Community. As for the Drug users they were fully protected by the vaccine.Our best recommendation is that if you are a Male or someone who identifies with being Gay it is not recommended for one to get the vaccine. On the other hand, if you are a Female or a Drug user the vaccine came about being very effective. 
